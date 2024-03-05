@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+from cmath import pi
+from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B
+
+
+n = 1  # Number of laps
+y = 14  # Distance (cm)
+radius_of_wheel = 2.705
+distance_from_center_of_robot_to_wheel = 45
+
+rotations_y = y / (2 * pi * radius_of_wheel)
+rotations_t = distance_from_center_of_robot_to_wheel / (2 * radius_of_wheel)
+
+rotations_r1 = 7.5 / 2 * 2.705
+rotations_r2 = 14 / 2 * 2.705
+
+speed_r1 = pi * 7.5 / 4
+speed_r2 = pi * 14 / 4
+
+Motor_1 = LargeMotor(OUTPUT_A)
+Motor_2 = LargeMotor(OUTPUT_B)
+
+total_distance = n * 2 * y  # Total distance for all laps
+
+for i in range(n):
+    # Move the motor for 1/2 of the lap
+    Motor_1.run_to_rel_pos(position_sp=rotations_y * 360, speed_sp=180)
+    Motor_2.run_to_rel_pos(position_sp=rotations_y * 360, speed_sp=180)
+    Motor_1.wait_until_not_moving()
+    Motor_2.wait_until_not_moving()
+
+    # Turn around
+    Motor_1.run_to_rel_pos(position_sp=rotations_r1 * 360, speed_sp=speed_r1 * 180 / pi)
+    Motor_2.run_to_rel_pos(position_sp=rotations_r2 * 360, speed_sp=speed_r2 * 180 / pi)
+    Motor_1.wait_until_not_moving()
+    Motor_2.wait_until_not_moving()
+
+    # Move the motor for the other 1/2 of the lap
+    Motor_1.run_to_rel_pos(position_sp=rotations_y * 360, speed_sp=360)
+    Motor_2.run_to_rel_pos(position_sp=rotations_y * 360, speed_sp=360)
+    Motor_1.wait_until_not_moving()
+    Motor_2.wait_until_not_moving()
+
+    # Turn around again
+    Motor_1.run_to_rel_pos(position_sp=rotations_r1 * 360, speed_sp=speed_r1)
+    Motor_2.run_to_rel_pos(position_sp=rotations_r2 * 360, speed_sp=speed_r2)
+    Motor_1.wait_until_not_moving()
+    Motor_2.wait_until_not_moving()
+
+print("Total distance traveled:", total_distance)
